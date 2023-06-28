@@ -1,0 +1,487 @@
+---
+#-----------------------------------------------------------------------------#
+# Author: Ariel S. Weher <ariel at weher dot net>
+# Date: 2023-06-27
+# Description: IXP topology for ContainerLab
+# License: CC-BY-SA 4.0
+#-----------------------------------------------------------------------------#
+
+#-----------------------------------------------------------------------------#
+# Lab management and topology preferences
+#-----------------------------------------------------------------------------#
+name: ixp
+prefix: lab
+#-----------------------------------------------------------------------------#
+mgmt:
+  network: lacnog_mng
+  ipv4-subnet: 100.64.0.0/24
+  ipv6-subnet: 2001:db8::/64
+  mtu: 9216
+  external-access: false
+topology:
+  kinds:
+    linux:
+      image: quay.io/frrouting/frr:8.5.2
+      image-pull-policy: IfNotPresent
+  nodes:
+#-----------------------------------------------------------------------------#
+# IXP Site A
+#-----------------------------------------------------------------------------#
+    sitea-edge1:
+      kind: linux
+      group: border-leaf
+      binds:
+        - ./.working-configs/sitea-edge1:/etc/frr
+    sitea-edge2:
+      kind: linux
+      group: border-leaf
+      binds:
+        - ./.working-configs/sitea-edge2:/etc/frr
+    sitea-spine1:
+      kind: linux
+      group: spine
+      binds:
+        - ./.working-configs/sitea-spine1:/etc/frr
+    sitea-spine2:
+      kind: linux
+      group: spine
+      binds:
+        - ./.working-configs/sitea-spine2:/etc/frr
+    sitea-leaf1:
+      kind: linux
+      group: leaf
+      binds:
+        - ./.working-configs/sitea-leaf1:/etc/frr
+    sitea-leaf2:
+      kind: linux
+      group: leaf
+      binds:
+        - ./.working-configs/sitea-leaf2:/etc/frr
+#-----------------------------------------------------------------------------#
+# IXP Site B
+#-----------------------------------------------------------------------------#
+    siteb-edge1:
+      kind: linux
+      group: border-leaf
+      binds:
+        - ./.working-configs/siteb-edge1:/etc/frr
+    siteb-spine1:
+      kind: linux
+      group: spine
+      binds:
+        - ./.working-configs/siteb-spine1:/etc/frr
+    siteb-spine2:
+      kind: linux
+      group: spine
+      binds:
+        - ./.working-configs/siteb-spine2:/etc/frr
+#-----------------------------------------------------------------------------#
+# IXP Site C
+#-----------------------------------------------------------------------------#
+    sitec-edge1:
+      kind: linux
+      group: border-leaf
+      binds:
+        - ./.working-configs/sitec-edge1:/etc/frr
+    sitec-spine1:
+      kind: linux
+      group: spine
+      binds:
+        - ./.working-configs/siteb-spine1:/etc/frr
+    sitec-spine2:
+      kind: linux
+      group: spine
+      binds:
+        - ./.working-configs/siteb-spine2:/etc/frr
+#-----------------------------------------------------------------------------#
+# CDNs
+#-----------------------------------------------------------------------------#
+    cdn1:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/cdn1:/etc/frr
+    cdn2:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/cdn2:/etc/frr
+    cdn3:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/cdn3:/etc/frr
+    cdn4:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/cdn4:/etc/frr
+#-----------------------------------------------------------------------------#
+# Members
+#-----------------------------------------------------------------------------#
+    member1:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member1:/etc/frr
+    member2:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member2:/etc/frr
+    member3:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member3:/etc/frr
+    member4:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member4:/etc/frr
+    member5:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member5:/etc/frr
+    member6:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member6:/etc/frr
+    member7:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member7:/etc/frr
+    member8:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/member8:/etc/frr
+#-----------------------------------------------------------------------------#
+# IXP Route Servers
+#-----------------------------------------------------------------------------#
+    rs1:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/rs1:/etc/frr
+    rs2:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/rs2:/etc/frr
+    rs3:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/rs3:/etc/frr
+    rs4:
+      kind: linux
+      group: server
+      binds:
+        - ./.working-configs/rs4:/etc/frr
+#-----------------------------------------------------------------------------#
+# Management hosts from the IXP Staff
+#-----------------------------------------------------------------------------#
+
+    pc1:
+      kind: linux
+      image: wbitt/network-multitool:alpine-extra
+      group: server
+      binds:
+        - ./.working-configs/pc1:/etc/frr
+    pc2:
+      kind: linux
+      image: wbitt/network-multitool:alpine-extra
+      group: server
+      binds:
+        - ./.working-configs/pc2:/etc/frr
+    pc3:
+      kind: linux
+      image: wbitt/network-multitool:alpine-extra
+      group: server
+      binds:
+        - ./.working-configs/pc3:/etc/frr
+    pc4:
+      kind: linux
+      image: wbitt/network-multitool:alpine-extra
+      group: server
+      binds:
+        - ./.working-configs/pc4:/etc/frr
+#-----------------------------------------------------------------------------#
+# Links
+#-----------------------------------------------------------------------------#
+  links:
+# Edge1 a Spines
+    - endpoints: 
+      - sitea-edge1:eth1
+      - sitea-spine1:eth1
+    - endpoints:
+      - sitea-edge1:eth2
+      - sitea-spine2:eth1
+    - endpoints:
+      - sitea-edge1:eth3
+      - sitea-spine1:eth2
+    - endpoints:
+      - sitea-edge1:eth4
+      - sitea-spine2:eth2
+# Edge2 a Spines
+    - endpoints:
+      - sitea-edge2:eth1
+      - sitea-spine1:eth3
+    - endpoints:
+      - sitea-edge2:eth2
+      - sitea-spine2:eth3
+    - endpoints:
+      - sitea-edge2:eth3
+      - sitea-spine1:eth4
+    - endpoints:
+      - sitea-edge2:eth4
+      - sitea-spine2:eth4
+# Spines a Leaf
+## Spine1 a Leaf1
+    - endpoints:
+      - sitea-spine1:eth5
+      - sitea-leaf1:eth1
+    - endpoints:
+      - sitea-spine1:eth6
+      - sitea-leaf1:eth2
+    - endpoints:
+      - sitea-spine1:eth7
+      - sitea-leaf1:eth3
+    - endpoints:
+      - sitea-spine1:eth8
+      - sitea-leaf1:eth4
+## Spine2 a Leaf2
+    - endpoints:
+      - sitea-spine2:eth5
+      - sitea-leaf2:eth1
+    - endpoints:
+      - sitea-spine2:eth6
+      - sitea-leaf2:eth2
+    - endpoints:
+      - sitea-spine2:eth7
+      - sitea-leaf2:eth3
+    - endpoints:
+      - sitea-spine2:eth8
+      - sitea-leaf2:eth4
+## Spine1 a Leaf2
+    - endpoints:
+      - sitea-spine1:eth9
+      - sitea-leaf2:eth5
+    - endpoints:
+      - sitea-spine1:eth10
+      - sitea-leaf2:eth6
+    - endpoints:
+      - sitea-spine1:eth11
+      - sitea-leaf2:eth7
+    - endpoints:
+      - sitea-spine1:eth12
+      - sitea-leaf2:eth8
+## Spine2 a Leaf1
+    - endpoints:
+      - sitea-spine2:eth9
+      - sitea-leaf1:eth5
+    - endpoints:
+      - sitea-spine2:eth10
+      - sitea-leaf1:eth6
+    - endpoints:
+      - sitea-spine2:eth11
+      - sitea-leaf1:eth7
+    - endpoints:
+      - sitea-spine2:eth12
+      - sitea-leaf1:eth8
+## Leaf1 a Leaf2
+    - endpoints:
+      - sitea-leaf1:eth9
+      - sitea-leaf2:eth9
+    - endpoints:
+      - sitea-leaf1:eth10
+      - sitea-leaf2:eth10
+    - endpoints:
+      - sitea-leaf1:eth11
+      - sitea-leaf2:eth11
+    - endpoints:
+      - sitea-leaf1:eth12
+      - sitea-leaf2:eth12
+    - endpoints:
+      - sitea-leaf1:eth13
+      - sitea-leaf2:eth13
+    - endpoints:
+      - sitea-leaf1:eth14
+      - sitea-leaf2:eth14
+    - endpoints:
+      - sitea-leaf1:eth15
+      - sitea-leaf2:eth15
+    - endpoints:
+      - sitea-leaf1:eth16
+      - sitea-leaf2:eth16
+# SiteB
+## SiteA Leaf1 a SiteB Spine1
+    - endpoints:
+      - sitea-leaf1:eth17
+      - siteb-spine1:eth1
+    - endpoints:
+      - sitea-leaf1:eth18
+      - siteb-spine1:eth2
+    - endpoints:
+      - sitea-leaf1:eth19
+      - siteb-spine1:eth3
+    - endpoints:
+      - sitea-leaf1:eth20
+      - siteb-spine1:eth4
+## Spine1 a Spine2
+    - endpoints:
+      - siteb-spine1:eth5
+      - siteb-spine2:eth1
+    - endpoints:
+      - siteb-spine1:eth6
+      - siteb-spine2:eth2
+    - endpoints:
+      - siteb-spine1:eth7
+      - siteb-spine2:eth3
+    - endpoints:
+      - siteb-spine1:eth8
+      - siteb-spine2:eth4
+## Spine1 a Edge1
+    - endpoints:
+      - siteb-spine1:eth9
+      - siteb-edge1:eth1
+    - endpoints:
+      - siteb-spine1:eth10
+      - siteb-edge1:eth2
+## Spine2 a Edge2
+    - endpoints:
+      - siteb-spine2:eth5
+      - siteb-edge1:eth3
+    - endpoints:
+      - siteb-spine2:eth6
+      - siteb-edge1:eth4
+# SiteB a SiteC
+## Spine2 a Spine1
+    - endpoints:
+      - siteb-spine2:eth7
+      - sitec-spine1:eth1
+    - endpoints:
+      - siteb-spine2:eth8
+      - sitec-spine1:eth2
+    - endpoints:
+      - siteb-spine2:eth9
+      - sitec-spine1:eth3
+    - endpoints:
+      - siteb-spine2:eth10
+      - sitec-spine1:eth4
+# SiteC
+## Spine1 a Spine2
+    - endpoints:
+      - sitec-spine1:eth5
+      - sitec-spine2:eth1
+    - endpoints:
+      - sitec-spine1:eth6
+      - sitec-spine2:eth2
+    - endpoints:
+      - sitec-spine1:eth7
+      - sitec-spine2:eth3
+    - endpoints:
+      - sitec-spine1:eth8
+      - sitec-spine2:eth4
+## SiteA Leaf2 a SiteC Spine2
+    - endpoints:
+      - sitea-leaf2:eth17
+      - sitec-spine2:eth5
+    - endpoints:
+      - sitea-leaf2:eth18
+      - sitec-spine2:eth6
+    - endpoints:
+      - sitea-leaf2:eth19
+      - sitec-spine2:eth7
+    - endpoints:
+      - sitea-leaf2:eth20
+      - sitec-spine2:eth8
+## Spine1 a Edge1
+    - endpoints:
+      - sitec-spine1:eth9
+      - sitec-edge1:eth1
+    - endpoints:
+      - sitec-spine1:eth10
+      - sitec-edge1:eth2
+## Spine2 a Edge1
+    - endpoints:
+      - sitec-spine2:eth9
+      - sitec-edge1:eth3
+    - endpoints:
+      - sitec-spine2:eth10
+      - sitec-edge1:eth4
+# PC
+    - endpoints:
+      - pc1:eth1
+      - sitea-edge1:eth5
+    - endpoints:
+      - pc2:eth1
+      - sitea-edge2:eth5
+    - endpoints:
+      - pc3:eth1
+      - siteb-edge1:eth5
+    - endpoints:
+      - pc4:eth1
+      - sitec-edge1:eth5
+# CDN
+    - endpoints:
+      - cdn1:eth1
+      - sitea-edge1:eth6
+    - endpoints:
+      - cdn2:eth1
+      - sitea-edge2:eth6
+    - endpoints:
+      - cdn3:eth1
+      - siteb-edge1:eth6
+    - endpoints:
+      - cdn4:eth1
+      - sitec-edge1:eth6
+# Members
+    - endpoints:
+      - member1:eth1
+      - sitea-edge1:eth7
+    - endpoints:
+      - member2:eth1
+      - sitea-edge1:eth8
+    - endpoints:
+      - member3:eth1
+      - sitea-edge2:eth7
+    - endpoints:
+      - member4:eth1
+      - sitea-edge2:eth8
+    - endpoints:
+      - member5:eth1
+      - siteb-edge1:eth7
+    - endpoints:
+      - member6:eth1
+      - siteb-edge1:eth8
+    - endpoints:
+      - member7:eth1
+      - sitec-edge1:eth7
+    - endpoints:
+      - member8:eth1
+      - sitec-edge1:eth8
+# Route Servers
+    - endpoints:
+      - rs1:eth1
+      - sitea-edge1:eth9
+    - endpoints:
+      - rs2:eth1
+      - sitea-edge2:eth9
+    - endpoints:
+      - rs1:eth2
+      - sitea-edge2:eth10
+    - endpoints:
+      - rs2:eth2
+      - sitea-edge1:eth10
+    - endpoints:
+      - rs3:eth1
+      - siteb-edge1:eth9
+    - endpoints:
+      - rs4:eth1
+      - sitec-edge1:eth9
+debug: false

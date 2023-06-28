@@ -1,0 +1,13 @@
+#ASW
+#
+.vagrant/
+.venv-*
+.working-configs/
+#
+backups/
+clab-ixp/
+#
+.*.bak
+#
+*.bak
+*.tmp
